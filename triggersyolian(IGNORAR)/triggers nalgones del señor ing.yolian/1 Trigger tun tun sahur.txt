@@ -1,0 +1,21 @@
+1-- Trigger tun tun sahur, TR_Evento_Insert
+-- Descripción: Registra automáticamente en la tabla AuditoriaEvento            
+--cada vez que se crea (inserta) un nuevo evento en el sistema.
+
+CREATE TRIGGER TR_Evento_Insert
+ON Evento
+AFTER INSERT
+AS
+BEGIN
+    -- Se desactiva el mensaje de "filas afectadas" para optimizar el rendimiento
+    SET NOCOUNT ON;
+
+    -- Se inserta el registro en la tabla de auditoría
+    INSERT INTO AuditoriaEvento (Accion, RegistroAfectado, Usuario)
+    SELECT 
+        'INSERT',          -- Define la acción específica que se realizó
+        i.IDEvento,        -- Toma el ID del nuevo evento desde la tabla virtual 'inserted'
+        SYSTEM_USER        -- Captura el usuario del motor de base de datos que ejecutó la consulta
+    FROM inserted i;
+END;
+GO

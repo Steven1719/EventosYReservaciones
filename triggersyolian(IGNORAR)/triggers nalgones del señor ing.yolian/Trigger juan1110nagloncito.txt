@@ -1,0 +1,24 @@
+
+-- Trigger juan1110nagloncito la grancombinacion : TR_Evento_Delete
+-- Descripción: Mantiene el rastro en la auditoría detallando qué registro 
+--              fue eliminado de la tabla Evento y quién lo hizo.
+
+CREATE TRIGGER TR_Evento_Delete
+ON Evento
+AFTER DELETE
+AS
+BEGIN
+    -- Mejora la velocidad de ejecución al no retornar el número de filas
+    SET NOCOUNT ON;
+
+    -- Inserta el historial de la eliminación
+    INSERT INTO AuditoriaEvento (Accion, RegistroAfectado, Usuario)
+    SELECT 
+        'DELETE',          -- Especifica que la acción fue un borrado
+        d.IDEvento,        -- Rescata el ID del evento que se acaba de eliminar
+        SYSTEM_USER        -- Registra al responsable de la eliminación
+    -- A diferencia de los anteriores, aquí es obligatorio usar la tabla 
+    -- virtual 'deleted' porque el registro ya no existe en la tabla original.
+    FROM deleted d;        
+END;
+GO

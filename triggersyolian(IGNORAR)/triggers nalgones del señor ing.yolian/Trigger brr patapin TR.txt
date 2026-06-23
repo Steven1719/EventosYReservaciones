@@ -1,0 +1,24 @@
+
+-- Trigger brr patapin: TR_Evento_Update
+-- Descripción: Guarda un registro en la auditoría cuando se modifica
+--  (actualiza) la información de un evento existente.
+
+CREATE TRIGGER TR_Evento_Update
+ON Evento
+AFTER UPDATE
+AS
+BEGIN
+    -- Evita el envío del conteo de filas a la aplicación cliente
+    SET NOCOUNT ON;
+
+    -- Se guarda la evidencia de la actualización
+    INSERT INTO AuditoriaEvento (Accion, RegistroAfectado, Usuario)
+    SELECT 
+        'UPDATE',          -- Indica que la operación fue una modificación
+        i.IDEvento,        -- Obtiene el ID del evento afectado
+        SYSTEM_USER        -- Identifica quién realizó el cambio
+    -- Se utiliza la tabla virtual 'inserted' porque en un UPDATE, esta 
+    -- contiene los valores nuevos que acaban de sobreescribir a los viejos.
+    FROM inserted i;       
+END;
+GO
