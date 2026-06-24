@@ -1,3 +1,5 @@
+use EVENTOSDB
+
 -- Auditoría para Cliente
 CREATE TABLE AuditoriaCliente (
     IDAuditoria INT IDENTITY(1,1) PRIMARY KEY,
